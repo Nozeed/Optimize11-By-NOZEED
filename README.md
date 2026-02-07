@@ -16,6 +16,7 @@
 - เปิด PowerShell ด้วยสิทธิ์ Run as Administrator<br>
 - Copy ข้อความในไฟล์ Windows 11 Gaming Optimization Script v2.0 By Nozeed.ps1 ทั้งหมดไปวางแล้วกด Enter<br>
 - รอจนเสร็จ (อาจใช้เวลา 1-15 นาที ขึ้นกับเครื่อง)<br><br>
+- ไฟล์แถม nozeed.nip ใช้ NVIDIA Profile Inspector ให้ในการ import
 
 <h3>รายละเอียด</h3>
 - ลบ bloatware windows 11 และ ปิด Service ที่ไม่จำเป็นออก<br>
@@ -30,4 +31,5 @@
 - Mouse Precision: ปิด Mouse Acceleration สำหรับ FPS<br>
 - Storage Service (storsvc): ปิดตามที่ขอ (เพิ่มใน services)<br>
 - High Performance Power Plan: active
+- nozeed.nip ตั้งค่า Nvidia Control
 
