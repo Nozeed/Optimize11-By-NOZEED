@@ -110,4 +110,5 @@ Get-ChildItem -Path "C:\Windows\SoftwareDistribution\Download" -Recurse | Remove
 
 Write-Host "`n🎮 เสร็จสิ้น! **REBOOT ทันที** เพื่อ activate HAGS/Memory tweaks" -ForegroundColor Cyan
 Write-Host "Benchmark FPS ควรดีขึ้น 5-15% ในเกม (test yourself)" -ForegroundColor Green
-Write-Host "ปัญหา? System Restore หรือ run script ใหม่" -ForegroundColor Red
+Write-Host "หากมีปัญหา? ให้ System Restore หรือ run script ใหม่" -ForegroundColor Red
+Write-Host "จัดทำโดย NOZEED" -ForegroundColor Yellow
