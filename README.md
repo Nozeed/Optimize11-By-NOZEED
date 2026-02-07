@@ -20,10 +20,10 @@
 
 - เปิด PowerShell ด้วยสิทธิ์ Run as Administrator<br>
 - Copy ข้อความในไฟล์ Script v2.0 Nozeed.ps1 ทั้งหมดไปวาง(คลิ๊กขวา)แล้วกด Enter<br>
-- รอจนเสร็จ (อาจใช้เวลา 1-15 นาที ขึ้นกับเครื่อง)<br><br>
+- รอจนเสร็จ (อาจใช้เวลา 1-15 นาที ขึ้นกับเครื่อง)<br>
 <div align="center">
   ไฟล์แถม nozeed.nip ใช้ NVIDIA Profile Inspector ให้ในการ import
-</div><br><br>
+</div><br>
 <h3>รายละเอียด</h3>
 - ลบ bloatware windows 11 และ ปิด Service ที่ไม่จำเป็นออก<br>
 - Hardware-Accelerated GPU Scheduling (HAGS): เปิดเพื่อลด latency (reg: HwSchMode=2)<br>
