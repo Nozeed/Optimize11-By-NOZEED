@@ -1,4 +1,9 @@
-# Windows-11-Gaming-Optimization-Script-By-NOZEED
+<div align="center">
+  <img height="250" src="https://pic.4th.in/images/2026/02/07/4B4667B4-770F-437E-95D5-0E94B84C8122.png"  />
+</div>
+<div align="center">
+<h1>Windows-11-Gaming-Optimization-Script-By-NOZEED</h1>
+</div>
 นี่คือ สคริปต์ PowerShell เวอร์ชันอัปเดต ที่เพิ่ม การตั้งค่ากราฟิกและประสิทธิภาพสำหรับเกม เรียบร้อยแล้ว (จาก tweaks ล่าสุดปี 2025-2026 ที่ safe และ tested จาก community เช่น GitHub, ElevenForum, Reddit)<br>
 
 รวบรวมตามความต้องการของคุณสำหรับ <b>Windows 11</b> โดยเฉพาะเครื่องเล่นเกม (เน้นประสิทธิภาพสูงสุด ลดสิ่งไม่จำเป็น)<br>
@@ -14,7 +19,7 @@
 <h3>วิธีใช้งาน</h3>
 
 - เปิด PowerShell ด้วยสิทธิ์ Run as Administrator<br>
-- Copy ข้อความในไฟล์ Windows 11 Gaming Optimization Script v2.0 By Nozeed.ps1 ทั้งหมดไปวางแล้วกด Enter<br>
+- Copy ข้อความในไฟล์ Script v2.0 Nozeed.ps1 ทั้งหมดไปวาง(คลิ๊กขวา)แล้วกด Enter<br>
 - รอจนเสร็จ (อาจใช้เวลา 1-15 นาที ขึ้นกับเครื่อง)<br><br>
 - ไฟล์แถม nozeed.nip ใช้ NVIDIA Profile Inspector ให้ในการ import
 
