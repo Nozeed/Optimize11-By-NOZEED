@@ -35,6 +35,6 @@
 - Network Latency Tweaks: Disable Nagle (TCPNoDelay=1, TcpAckFrequency=1) สำหรับ online games<br>
 - Mouse Precision: ปิด Mouse Acceleration สำหรับ FPS<br>
 - Storage Service (storsvc): ปิดตามที่ขอ (เพิ่มใน services)<br>
-- High Performance Power Plan: active
+- High Performance Power Plan: active<br>
 - nozeed.nip ตั้งค่า Nvidia Control
 
