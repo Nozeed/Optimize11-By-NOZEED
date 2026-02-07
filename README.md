@@ -24,7 +24,7 @@
 - ไฟล์แถม nozeed.nip ใช้ [NVIDIA Profile Inspector](https://github.com/Orbmu2k/nvidiaProfileInspector/releases) ให้ในการ import
 <br><br>
 <h3>รายละเอียด</h3>
-- ลบ bloatware windows 11 และ ปิด Service ที่ไม่จำเป็นออก<br>
+- ลบ ลบ Bloatware ของ Windows 11 และ ปิด Services Disable ที่ไม่จำเป็น<br>
 - Hardware-Accelerated GPU Scheduling (HAGS): เปิดเพื่อลด latency (reg: HwSchMode=2)<br>
 - Game Mode: เปิดอัตโนมัติ<br>
 - Disable Game DVR/Capture: ลด overhead ใน fullscreen<br>
