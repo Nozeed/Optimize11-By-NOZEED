@@ -13,9 +13,9 @@
 
 <h3>วิธีใช้งาน</h3>
 
-เปิด PowerShell ด้วยสิทธิ์ Run as Administrator
-Copy สคริปต์ทั้งหมดไปวางแล้วกด Enter
-รอจนเสร็จ (อาจใช้เวลา 5-15 นาที ขึ้นกับเครื่อง)<br><br>
+เปิด PowerShell ด้วยสิทธิ์ Run as Administrator<br>
+Copy ข้อความในไฟล์ Windows 11 Gaming Optimization Script v2.0 By Nozeed.ps1 ทั้งหมดไปวางแล้วกด Enter<br>
+รอจนเสร็จ (อาจใช้เวลา 1-15 นาที ขึ้นกับเครื่อง)<br><br>
 
 ลบ bloatware windows 11 และ ปิด Service ที่ไม่จำเป็นออก<br>
 Hardware-Accelerated GPU Scheduling (HAGS): เปิดเพื่อลด latency (reg: HwSchMode=2)<br>
