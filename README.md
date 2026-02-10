@@ -19,7 +19,7 @@
 <h3>วิธีใช้งาน</h3>
 
 - เปิด PowerShell ด้วยสิทธิ์ Run as Administrator<br>
-- Copy ข้อความในไฟล์ Script v2.0 Nozeed.ps1 ทั้งหมดไปวาง(คลิ๊กขวา)แล้วกด Enter<br>
+- Copy ข้อความในไฟล์ [Script v2.0 Nozeed.ps1](https://github.com/Nozeed/Optimize11-By-NOZEED/blob/main/Script%20v2.0%20Nozeed.ps1) ทั้งหมดไปวาง(คลิ๊กขวา)แล้วกด Enter<br>
 - รอจนเสร็จ (อาจใช้เวลา 1-15 นาที ขึ้นกับเครื่อง)
 - ไฟล์แถม nozeed.nip ใช้ [NVIDIA Profile Inspector](https://github.com/Orbmu2k/nvidiaProfileInspector/releases) ให้ในการ import
 <br><br>
@@ -34,7 +34,7 @@
 - Memory Tweaks: DisablePagingExecutive=1, LargeSystemCache=1 (reboot ต้อง)<br>
 - Network Latency Tweaks: Disable Nagle (TCPNoDelay=1, TcpAckFrequency=1) สำหรับ online games<br>
 - Mouse Precision: ปิด Mouse Acceleration สำหรับ FPS<br>
-- Storage Service (storsvc): ปิดตามที่ขอ (เพิ่มใน services)<br>
+- Storage Service (storsvc): ปิด<br>
 - High Performance Power Plan: active<br>
 - nozeed.nip ตั้งค่า Nvidia Control
 
