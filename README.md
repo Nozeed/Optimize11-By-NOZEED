@@ -4,7 +4,7 @@
 <div align="center">
 <h1>Windows-11-Gaming-Optimization-Script-By-NOZEED</h1>
 </div>
-นี่คือ สคริปต์ PowerShell เวอร์ชันอัปเดต ที่เพิ่ม การตั้งค่ากราฟิกและประสิทธิภาพสำหรับเกม เรียบร้อยแล้ว (จาก tweaks ล่าสุดปี 2025-2026 ที่ safe และ tested จาก community เช่น GitHub, ElevenForum, Reddit)<br>
+นี่คือ สคริปต์ PowerShell Tweaks เวอร์ชันอัปเดต ที่เพิ่ม การตั้งค่ากราฟิกและประสิทธิภาพสำหรับเกม เรียบร้อยแล้ว (จาก tweaks ล่าสุดปี 2025-2026 ที่ safe และ tested จาก community เช่น GitHub, ElevenForum, Reddit)<br>
 
 รวบรวมตามความต้องการของคุณสำหรับ <b>Windows 11</b> โดยเฉพาะเครื่องเล่นเกม (เน้นประสิทธิภาพสูงสุด ลดสิ่งไม่จำเป็น)<br>
 
