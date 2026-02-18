@@ -174,6 +174,17 @@ foreach ($Svc in $ServiceList) {
 Write-Host "[9/9] Finalizing with Component Cleanup..." -ForegroundColor Yellow
 Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
 
+# 10. [PROCESS] ลดจำนวน process svchost.exe ใน Task Manager
+Write-Host "[Extra] Reducing svchost.exe processes via SvcHostSplitThresholdInKB..." -ForegroundColor Cyan
+# ตรวจ RAM ทั้งเครื่อง (ใน GB)
+$totalRamGB = [math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1GB)
+# คำนวณค่า KB (RAM GB * 1024 * 1024)
+$thresholdKB = $totalRamGB * 1024 * 1024
+# + เล็กน้อยเพื่อความปลอดภัย (เช่น + 10%)
+$thresholdKB = [math]::Round($thresholdKB * 1.1)
+Set-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Control" -Name "SvcHostSplitThresholdInKB" -Value $thresholdKB -Type DWord -Force
+Write-Host "Set SvcHostSplitThresholdInKB to $thresholdKB KB (based on $totalRamGB GB RAM). Restart required." -ForegroundColor Green
+
 # ======================
 # สิ้นสุด
 # ======================
