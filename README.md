@@ -1,40 +1,36 @@
-<div align="center">
-  <img height="250" src="https://pic.4th.in/images/2026/02/07/4B4667B4-770F-437E-95D5-0E94B84C8122.png"  />
-</div>
-<div align="center">
-<h1>Windows-11-Gaming-Optimization-Script-By-NOZEED</h1>
-</div>
-นี่คือ สคริปต์ PowerShell Tweaks เวอร์ชันอัปเดต ที่เพิ่ม การตั้งค่ากราฟิกและประสิทธิภาพสำหรับเกม เรียบร้อยแล้ว (จาก tweaks ล่าสุดปี 2025-2026 ที่ safe และ tested จาก community เช่น GitHub, ElevenForum, Reddit)<br>
+# Windows-11-Gaming-Optimization-Script-By-NOZEED
 
-รวบรวมตามความต้องการของคุณสำหรับ <b>Windows 11</b> โดยเฉพาะเครื่องเล่นเกม (เน้นประสิทธิภาพสูงสุด ลดสิ่งไม่จำเป็น)<br>
+![Windows 11 Gaming Optimize](https://img.shields.io/badge/Windows-11-0078D4?style=for-the-badge&logo=windows&logoColor=white)
+![PowerShell](https://img.shields.io/badge/PowerShell-7.x-blue?style=for-the-badge&logo=powershell&logoColor=white)
+![Version](https://img.shields.io/badge/Version-v4-green?style=for-the-badge)
 
-<h3>คำเตือนสำคัญมาก</h3>
+**สคริปต์ PowerShell อัปเดตสำหรับ Windows 11 (รองรับ 24H2 / 25H2 / 26H1 / 26H2)**  
+เน้น **ประสิทธิภาพสูงสุดสำหรับเล่นเกม** (ลด latency, ลบ bloatware, ปิด animation/visual effects, tweak GPU/Network/Memory)  
+รวบรวม tweaks ล่าสุดปี 2025-2026 ที่ปลอดภัยและ tested จาก community
 
-- แนะนำให้รันหลังลงวินโดวน์มาใหม่ แนะนำ Windows 11 (24h2/25h2/26h1) จะเห็นผลสุดๆ 
-- สคริปต์นี้ทำการเปลี่ยนแปลงระบบจำนวนมาก (ลบแอป, ปิดฟีเจอร์, ปิดเซอร์วิส, แก้ registry)<br>
-- ควร Backup ข้อมูล / สร้างจุดคืนค่า (System Restore Point) ก่อนรัน<br>
-- รันด้วย PowerShell แบบ Administrator เท่านั้น<br>
-- บางอย่างอาจทำให้ระบบเสียหายถ้าเครื่องคุณใช้งานฟีเจอร์ที่ถูกลบ/ปิด (เช่น ถ้าเคยใช้ Xbox บางส่วน)<br>
-- หลังรันเสร็จ แนะนำ รีสตาร์ทเครื่อง ทันที<br><br>
+### คุณสมบัติหลัก (Features v4)
+- ลบ **OneDrive** ให้ออกหมดจดจริง (process, uninstaller, folders, registry, prevent reinstall + sidebar)
+- ปิด **Visual Effects & Animations** ทั้งหมด → Best Performance mode (MinAnimate=0, TaskbarAnimations=0, Transparency=0, AeroPeek=0)
+- ลบ Bloatware / Appx packages ที่ไม่จำเป็น
+- คืนค่า **Classic Context Menu** + **Windows Photo Viewer**
+- Enable **HAGS**, Game Mode, ปิด Game DVR / MPO
+- ตั้ง **CPU Priority** ให้ foreground apps สูงสุด
+- Tweak **Memory** (DisablePagingExecutive, LargeSystemCache)
+- ลด **Network Latency** (TCPNoDelay, TcpAckFrequency)
+- ปิด **Mouse Acceleration** สำหรับ FPS games
+- ปิด services ที่ไม่จำเป็น
+- Cleanup **WinSXS**
 
-<h3>วิธีใช้งาน</h3>
-แบบที่ 1 : เปิด PowerShell แล้ววางคำสั่งด้านล่าง จากนั้น Enter<br>
-<pre>irm https://raw.githubusercontent.com/Nozeed/Optimize11-By-NOZEED/refs/heads/main/Script%20v3%20Nozeed.ps1 | iex</pre>
-รอจนเสร็จ (อาจใช้เวลา 1-15 นาที ขึ้นกับเครื่อง)<br><br>
-- ไฟล์แถม nozeed.nip ใช้ <a href="https://github.com/Orbmu2k/nvidiaProfileInspector/releases">NVIDIA Profile Inspector</a> ในการ import
-<br><br>
-<h3>รายละเอียด</h3>
-- ลบ Bloatware ของ Windows 11 และ ปิด Services Disable ที่ไม่จำเป็น<br>
-- Hardware-Accelerated GPU Scheduling (HAGS): เปิดเพื่อลด latency (reg: HwSchMode=2)<br>
-- Game Mode: เปิดอัตโนมัติ<br>
-- Disable Game DVR/Capture: ลด overhead ใน fullscreen<br>
-- NVIDIA MPO Disable: ถ้า detect NVIDIA GPU (DisablePreemption=1) เพื่อ low input lag<br>
-- Visual Effects to Best Performance: ปิด animations, transparency, menu delay<br>
-- Foreground App Priority: CPU prioritize เกม (Win32PrioritySeparation=26)<br>
-- Memory Tweaks: DisablePagingExecutive=1, LargeSystemCache=1 (reboot ต้อง)<br>
-- Network Latency Tweaks: Disable Nagle (TCPNoDelay=1, TcpAckFrequency=1) สำหรับ online games<br>
-- Mouse Precision: ปิด Mouse Acceleration สำหรับ FPS<br>
-- Storage Service (storsvc): ปิด<br>
-- High Performance Power Plan: active<br>
-- nozeed.nip ตั้งค่า Nvidia Control
+### คำเตือนสำคัญ
+- **ต้องรันด้วยสิทธิ์ Administrator**
+- **สำรองข้อมูล + สร้าง Restore Point** ก่อนรัน
+- รีสตาร์ทเครื่องหลังรันเสร็จทุกครั้ง
+- ถ้า OneDrive ยังดื้อ → ลอง `winget uninstall --id Microsoft.OneDrive`
 
+### วิธีรัน (Run Methods)
+
+#### วิธีแนะนำ: รันตรงจาก GitHub (เวอร์ชันล่าสุด v4)
+เปิด PowerShell (Admin) แล้ว paste:
+
+```powershell
+irm https://raw.githubusercontent.com/Nozeed/Optimize11-By-NOZEED/main/Optimize11-Nozeed-v4.ps1 | iex
