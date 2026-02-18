@@ -18,10 +18,11 @@
 - หลังรันเสร็จ แนะนำ รีสตาร์ทเครื่อง ทันที<br><br>
 
 <h3>วิธีใช้งาน</h3>
-
-- เปิด PowerShell ด้วยสิทธิ์ Run as Administrator<br>
-- Copy ข้อความในไฟล์ [Script v3 Nozeed.ps1](https://github.com/Nozeed/Optimize11-By-NOZEED/raw/refs/heads/main/Script%20v3%20Nozeed.ps1) ทั้งหมดไปวาง(คลิ๊กขวา)แล้วกด Enter<br>
-- รอจนเสร็จ (อาจใช้เวลา 1-15 นาที ขึ้นกับเครื่อง)
+# แบบที่ 1 : เปิด PowerShell แล้ววางคำสั่งด้านล่าง จากนั้น Enter
+```bash
+irm https://raw.githubusercontent.com/Nozeed/Optimize11-By-NOZEED/refs/heads/main/Script%20v3%20Nozeed.ps1 | iex
+```
+รอจนเสร็จ (อาจใช้เวลา 1-15 นาที ขึ้นกับเครื่อง)
 - ไฟล์แถม nozeed.nip ใช้ [NVIDIA Profile Inspector](https://github.com/Orbmu2k/nvidiaProfileInspector/releases) ให้ในการ import
 <br><br>
 <h3>รายละเอียด</h3>
