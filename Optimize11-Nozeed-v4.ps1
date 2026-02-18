@@ -170,11 +170,7 @@ foreach ($Svc in $ServiceList) {
     }
 }
 
-# 9. [CLEANUP] - WinSXS Cleanup
-Write-Host "[9/9] Finalizing with Component Cleanup..." -ForegroundColor Yellow
-Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
-
-# 10. [PROCESS] ลดจำนวน process svchost.exe ใน Task Manager
+# 9. [PROCESS] ลดจำนวน process svchost.exe ใน Task Manager
 Write-Host "[Extra] Reducing svchost.exe processes via SvcHostSplitThresholdInKB..." -ForegroundColor Cyan
 # ตรวจ RAM ทั้งเครื่อง (ใน GB)
 $totalRamGB = [math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1GB)
@@ -185,10 +181,13 @@ $thresholdKB = [math]::Round($thresholdKB * 1.1)
 Set-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Control" -Name "SvcHostSplitThresholdInKB" -Value $thresholdKB -Type DWord -Force
 Write-Host "Set SvcHostSplitThresholdInKB to $thresholdKB KB (based on $totalRamGB GB RAM). Restart required." -ForegroundColor Green
 
+# 10. [CLEANUP] - WinSXS Cleanup
+Write-Host "[9/9] Finalizing with Component Cleanup..." -ForegroundColor Yellow
+Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+
 # ======================
 # สิ้นสุด
 # ======================
 Write-Host "`n--- SUCCESS: SYSTEM OPTIMIZED by NOZEED (v4) ---" -ForegroundColor Green
 Write-Host "Project: https://github.com/Nozeed/Optimize11-By-NOZEED" -ForegroundColor Cyan
 Write-Host "Please RESTART your computer to apply all changes." -ForegroundColor Red
-Write-Host "If OneDrive still lingers, run: winget uninstall --id Microsoft.OneDrive" -ForegroundColor Yellow
