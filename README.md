@@ -20,6 +20,7 @@
 - ปิด **Mouse Acceleration** สำหรับ FPS games
 - ปิด services ที่ไม่จำเป็น
 - Cleanup **WinSXS**
+- ลดจำนวน process svchost.exe ใน Task Manager
 
 ### คำเตือนสำคัญ
 - **ต้องรันด้วยสิทธิ์ Administrator**
