@@ -21,7 +21,7 @@
 แบบที่ 1 : เปิด PowerShell แล้ววางคำสั่งด้านล่าง จากนั้น Enter<br>
 <pre>irm https://raw.githubusercontent.com/Nozeed/Optimize11-By-NOZEED/refs/heads/main/Script%20v3%20Nozeed.ps1 | iex</pre>
 รอจนเสร็จ (อาจใช้เวลา 1-15 นาที ขึ้นกับเครื่อง)<br><br>
-- ไฟล์แถม nozeed.nip ใช้ [NVIDIA Profile Inspector](https://github.com/Orbmu2k/nvidiaProfileInspector/releases) ให้ในการ import
+- ไฟล์แถม nozeed.nip ใช้ <a href="https://github.com/Orbmu2k/nvidiaProfileInspector/releases">NVIDIA Profile Inspector</a> ให้ในการ import
 <br><br>
 <h3>รายละเอียด</h3>
 - ลบ Bloatware ของ Windows 11 และ ปิด Services Disable ที่ไม่จำเป็น<br>
