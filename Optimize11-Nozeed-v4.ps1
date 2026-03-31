@@ -1,8 +1,8 @@
 #================================================================================
-#   Windows-11-Gaming-Optimization-Script-By-NOZEED v4.5
+#   Windows-11-Gaming-Optimization-Script-By-NOZEED v4.4 - Clean Errors
 #   Project: https://github.com/Nozeed/Optimize11-By-NOZEED
-#   Author: NOZEED
-#   Description: Gaming Optimize Win11
+#   Author: NOZEED (@beernozeed)
+#   Description: Gaming Optimize Win11 (low latency + fixed binding errors)
 #   Warning: Run as Admin | Restart after run
 #================================================================================
 
@@ -143,6 +143,6 @@ Write-Host "[Cleanup] Running DISM..." -ForegroundColor Yellow
 Dism /online /Cleanup-Image /StartComponentCleanup /ResetBase 2>$null
 
 Write-Host "`n--- Done! Restart your PC now ---" -ForegroundColor Green
-Write-Host "DISM /ResetBase อาจ error หรือ ignore ใน Win11 ล่าสุด (ปกติ ไม่กระทบ tweaks อื่น)" -ForegroundColor Yellow
-Write-Host "หลังรีสตาร์ท เช็ค Task Manager: svchost น้อยลง, latency เกมดีขึ้น" -ForegroundColor Cyan
+Write-Host "DISM /ResetBase may error or be ignored in latest Win11 (normally doesn't affect other tweaks)" -ForegroundColor Yellow
+Write-Host "After restart, check Task Manager: svchost should be lower, game latency improved" -ForegroundColor Cyan
 Write-Host "Project: https://github.com/Nozeed/Optimize11-By-NOZEED" -ForegroundColor Cyan
