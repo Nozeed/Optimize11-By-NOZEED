@@ -1,8 +1,8 @@
 #================================================================================
-#   Windows-11-Gaming-Optimization-Script-By-NOZEED v4.4 - Clean Errors
+#   Windows-11-Gaming-Optimization-Script-By-NOZEED v4.5
 #   Project: https://github.com/Nozeed/Optimize11-By-NOZEED
-#   Author: NOZEED (@beernozeed)
-#   Description: Gaming Optimize Win11 (low latency + fixed binding errors)
+#   Author: NOZEED
+#   Description: Gaming Optimize Win11
 #   Warning: Run as Admin | Restart after run
 #================================================================================
 
@@ -57,12 +57,21 @@ $gameDvrPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR"
 if (!(Test-Path $gameDvrPath)) { New-Item $gameDvrPath -Force | Out-Null }
 Set-ItemProperty $gameDvrPath "AllowGameDVR" 0 -Type DWord -EA SilentlyContinue
 
+New-Item "HKCU:\Software\Microsoft\GameBar" -Force | Out-Null
 Set-ItemProperty "HKCU:\Software\Microsoft\GameBar" "AllowAutoGameMode" 1 -Type DWord -EA SilentlyContinue
+Set-ItemProperty "HKCU:\Software\Microsoft\GameBar" "AutoGameModeEnabled" 1 -Type DWord -EA SilentlyContinue
+Set-ItemProperty "HKCU:\Software\Microsoft\GameBar" "ShowStartupPanel" 0 -Type DWord -EA SilentlyContinue
+Set-ItemProperty "HKCU:\Software\Microsoft\GameBar" "UseNexusForGameBarEnabled" 0 -Type DWord -EA SilentlyContinue
+New-Item "HKCU:\System\GameConfigStore" -Force | Out-Null
 Set-ItemProperty "HKCU:\System\GameConfigStore" "GameDVR_Enabled" 0 -Type DWord -EA SilentlyContinue
 Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\Dwm" "OverlayTestMode" 5 -Type DWord -EA SilentlyContinue
 
 $gamesPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games"
 if (Test-Path $gamesPath) {
+    Set-ItemProperty $gamesPath "Affinity" 0 -Type DWord -EA SilentlyContinue
+    Set-ItemProperty $gamesPath "Background Only" "False" -Type String -EA SilentlyContinue
+    Set-ItemProperty $gamesPath "BackgroundPriority" 1 -Type DWord -EA SilentlyContinue
+    Set-ItemProperty $gamesPath "Clock Rate" 10000 -Type DWord -EA SilentlyContinue
     Set-ItemProperty $gamesPath "GPU Priority" 8 -Type DWord -EA SilentlyContinue
     Set-ItemProperty $gamesPath "Priority" 6 -Type DWord -EA SilentlyContinue
     Set-ItemProperty $gamesPath "Scheduling Category" "High" -Type String -EA SilentlyContinue
@@ -70,8 +79,16 @@ if (Test-Path $gamesPath) {
 }
 
 Set-ItemProperty "HKCU:\System\GameConfigStore" "GameDVR_FSEBehaviorMode" 2 -Type DWord -EA SilentlyContinue
+Set-ItemProperty "HKCU:\System\GameConfigStore" "GameDVR_HonorUserFSEBehaviorMode" 1 -Type DWord -EA SilentlyContinue
+Set-ItemProperty "HKCU:\System\GameConfigStore" "GameDVR_DXGIHonorFSEWindowsCompatible" 1 -Type DWord -EA SilentlyContinue
+Set-ItemProperty "HKCU:\System\GameConfigStore" "GameDVR_EFSEFeatureFlags" 0 -Type DWord -EA SilentlyContinue
 
+New-Item "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Force | Out-Null
 Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "NetworkThrottlingIndex" 0xffffffff -Type DWord -EA SilentlyContinue
+Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "SystemResponsiveness" 0 -Type DWord -EA SilentlyContinue
+New-Item "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Force | Out-Null
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "NetworkThrottlingIndex" 0xffffffff -Type DWord -EA SilentlyContinue
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "SystemResponsiveness" 0 -Type DWord -EA SilentlyContinue
 $tcpPath = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters"
 Set-ItemProperty $tcpPath "TcpAckFrequency" 1 -EA SilentlyContinue
 Set-ItemProperty $tcpPath "TCPNoDelay" 1 -EA SilentlyContinue
@@ -83,7 +100,15 @@ Get-ChildItem "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfac
 }
 
 Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" "Win32PrioritySeparation" 26 -Type DWord -EA SilentlyContinue
+New-Item "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\GTA5.exe\PerfOptions" -Force | Out-Null
+Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\GTA5.exe\PerfOptions" "CpuPriorityClass" 3 -Type DWord -EA SilentlyContinue
+Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\GTA5.exe\PerfOptions" "IoPriority" 3 -Type DWord -EA SilentlyContinue
+New-Item "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\FiveM_GTAProcess.exe\PerfOptions" -Force | Out-Null
+Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\FiveM_GTAProcess.exe\PerfOptions" "CpuPriorityClass" 3 -Type DWord -EA SilentlyContinue
+Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\FiveM_GTAProcess.exe\PerfOptions" "IoPriority" 3 -Type DWord -EA SilentlyContinue
 powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
+powercfg /change monitor-timeout-ac 0 2>$null
+powercfg /change standby-timeout-ac 0 2>$null
 powercfg /hibernate off 2>$null
 
 # 5. Memory + Svchost Reduction
@@ -102,6 +127,8 @@ if ($totalRamGB -ge 8) {
 # 6. Mouse + Services
 Write-Host "[Input/Services] Disable..." -ForegroundColor Cyan
 @("MouseSpeed","MouseThreshold1","MouseThreshold2") | % { Set-ItemProperty "HKCU:\Control Panel\Mouse" $_ 0 -EA SilentlyContinue }
+Set-ItemProperty "HKCU:\Control Panel\Desktop" "MenuShowDelay" 0 -Type String -EA SilentlyContinue
+Set-ItemProperty "HKCU:\Control Panel\Desktop" "ForegroundLockTimeout" 0 -Type DWord -EA SilentlyContinue
 
 $services = @("SysMain","WSearch","TabletInputService","DiagTrack","DmWappushservice","PrintSpooler","RemoteRegistry","TrkWks","WbioSrvc","FrameServer")
 foreach ($svc in $services) {
