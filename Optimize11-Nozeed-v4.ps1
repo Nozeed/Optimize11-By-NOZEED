@@ -1,161 +1,108 @@
 #================================================================================
-#   Windows-11-Gaming-Optimization-Script-By-NOZEED v4.4 - Clean Errors
+#   Windows-11-Gaming-Optimization-Script-By-NOZEED
 #   Project: https://github.com/Nozeed/Optimize11-By-NOZEED
-#   Author: NOZEED (@beernozeed)
-#   Description: Gaming Optimize Win11 (low latency + fixed binding errors)
-#   Warning: Run as Admin | Restart after run
+#   Author: NOZEED (@beernozeed) + Grok Optimized
+#   Description: Ultimate Gaming Optimize Win11 26H2 (FiveM Focused)
+#   Warning: Run as Administrator | Restart after run
 #================================================================================
 
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-if (-not $isAdmin) { Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
+if (-not $isAdmin) { 
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit 
+}
 
-Write-Host "NOZEED Gaming Optimize v4.4 (Clean)" -ForegroundColor Green
+Write-Host "🚀 NOZEED Gaming Optimize - Ultimate" -ForegroundColor Green
+Write-Host "กำลังปรับแต่งให้แรงที่สุดสำหรับ..." -ForegroundColor Cyan
 
-# 1. Bloatware + OneDrive Removal
-Write-Host "[Bloat + OneDrive] Removing..." -ForegroundColor Cyan
+# 1. Bloatware + OneDrive + Copilot Removal
+Write-Host "[1/6] Removing Bloat + OneDrive + Copilot..." -ForegroundColor Cyan
 taskkill /f /im OneDrive.exe *>$null 2>&1
-@("$env:SystemRoot\SysWOW64\OneDriveSetup.exe", "$env:SystemRoot\System32\OneDriveSetup.exe") | % { if (Test-Path $_) { Start-Process $_ "/uninstall" -Wait -NoNewWindow -EA SilentlyContinue } }
+@("$env:SystemRoot\SysWOW64\OneDriveSetup.exe", "$env:SystemRoot\System32\OneDriveSetup.exe") | % { 
+    if (Test-Path $_) { Start-Process $_ "/uninstall" -Wait -NoNewWindow -EA SilentlyContinue } 
+}
 
-$bloatList = @("*OneDrive*","*Xbox*","*Photos*","*StickyNotes*","*Wallet*","*Bing*","*Family*","*Camera*","*People*","*Zune*","*WebExperience*","*GetHelp*","*YourPhone*","*OfficeHub*","*Teams*","*FeedbackHub*","*Clipchamp*")
+$bloatList = @("*OneDrive*","*Xbox*","*Bing*","*Family*","*Camera*","*People*","*Zune*","*WebExperience*","*GetHelp*","*YourPhone*","*OfficeHub*","*Teams*","*FeedbackHub*","*Clipchamp*","*Copilot*")
 foreach ($app in $bloatList) {
     Get-AppxPackage -AllUsers $app | Remove-AppxPackage -EA SilentlyContinue
     Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like $app } | Remove-AppxProvisionedPackage -Online -EA SilentlyContinue
 }
 
+# ลบ Copilot ถาวร
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" /v TurnOffWindowsCopilot /t REG_DWORD /d 1 /f
+reg add "HKCU\Software\Policies\Microsoft\Windows\WindowsCopilot" /v TurnOffWindowsCopilot /t REG_DWORD /d 1 /f
+
+# ลบ OneDrive เต็ม
 @("$env:UserProfile\OneDrive", "$env:LocalAppData\Microsoft\OneDrive", "$env:ProgramData\Microsoft OneDrive", "C:\OneDriveTemp") | Remove-Item -Recurse -Force -EA SilentlyContinue
-
 New-Item "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Force | Out-Null
-Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" "DisableFileSyncNGSC" 1 -Type DWord -EA SilentlyContinue
+Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" "DisableFileSyncNGSC" 1 -Type DWord
 
-# แยก path เพื่อหลีกเลี่ยง binding conflict
-$clsid1 = "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"
-$clsid2 = "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"
-if (Test-Path $clsid1) { Remove-ItemProperty $clsid1 "System.IsPinnedToNameSpaceTree" -EA SilentlyContinue }
-if (Test-Path $clsid2) { Remove-ItemProperty $clsid2 "System.IsPinnedToNameSpaceTree" -EA SilentlyContinue }
+# 2. Visual + Classic
+Write-Host "[2/6] Disable Visual Effects + Classic UI..." -ForegroundColor Cyan
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" "VisualFXSetting" 3 -Type DWord
+@("TaskbarAnimations","ListviewAlphaSelect") | % { Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" $_ 0 -Type DWord }
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\DWM" "EnableAeroPeek" 0 -Type DWord
+Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" "EnableTransparency" 0 -Type DWord
+Stop-Process -Name explorer -Force; Start-Sleep 2; Start-Process explorer
 
-# 2. Visual/Animation Disable
-Write-Host "[Visuals] Disable..." -ForegroundColor Cyan
-Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" "VisualFXSetting" 3 -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKCU:\Control Panel\Desktop\WindowMetrics" "MinAnimate" 0 -Type String -EA SilentlyContinue
-@("TaskbarAnimations","ListviewAlphaSelect") | % { Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" $_ 0 -Type DWord -EA SilentlyContinue }
-Set-ItemProperty "HKCU:\Software\Microsoft\Windows\DWM" "EnableAeroPeek" 0 -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" "EnableTransparency" 0 -Type DWord -EA SilentlyContinue
-Stop-Process -Name explorer -Force -EA SilentlyContinue; Start-Sleep 2; Start-Process explorer -EA SilentlyContinue
-
-# 3. Classic Features
-Write-Host "[Classic] Restore..." -ForegroundColor Cyan
+# Classic Right-Click + Photo Viewer
 New-Item "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Force | Out-Null
-Set-ItemProperty "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" "(Default)" "" -EA SilentlyContinue
-$pv = "HKLM:\SOFTWARE\Microsoft\Windows Photo Viewer\Capabilities\FileAssociations"
-New-Item $pv -Force | Out-Null
-@(".jpg",".jpeg",".png",".bmp",".gif",".tiff") | % { Set-ItemProperty $pv $_ "PhotoViewer.FileAssoc.Tiff" -EA SilentlyContinue }
+Set-ItemProperty "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" "(Default)" "" 
 
-# 4. Gaming + Latency Tweaks
-Write-Host "[Gaming/Latency] Tweaks..." -ForegroundColor Cyan
+# 3. Gaming + Latency + Power Throttling
+Write-Host "[3/6] Gaming & Low Latency Tweaks..." -ForegroundColor Cyan
 
-$gameDvrPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR"
-if (!(Test-Path $gameDvrPath)) { New-Item $gameDvrPath -Force | Out-Null }
-Set-ItemProperty $gameDvrPath "AllowGameDVR" 0 -Type DWord -EA SilentlyContinue
+# Power Throttling Off
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v PowerThrottlingOff /t REG_DWORD /d 1 /f
 
-New-Item "HKCU:\Software\Microsoft\GameBar" -Force | Out-Null
-Set-ItemProperty "HKCU:\Software\Microsoft\GameBar" "AllowAutoGameMode" 1 -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKCU:\Software\Microsoft\GameBar" "AutoGameModeEnabled" 1 -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKCU:\Software\Microsoft\GameBar" "ShowStartupPanel" 0 -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKCU:\Software\Microsoft\GameBar" "UseNexusForGameBarEnabled" 0 -Type DWord -EA SilentlyContinue
-New-Item "HKCU:\System\GameConfigStore" -Force | Out-Null
-Set-ItemProperty "HKCU:\System\GameConfigStore" "GameDVR_Enabled" 0 -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\Dwm" "OverlayTestMode" 5 -Type DWord -EA SilentlyContinue
+# GameDVR + GameBar
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f
+reg add "HKCU:\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f
+reg add "HKCU:\System\GameConfigStore" /v GameDVR_FSEBehaviorMode /t REG_DWORD /d 2 /f
 
+reg add "HKLM\SOFTWARE\Microsoft\Windows\Dwm" /v OverlayTestMode /t REG_DWORD /d 5 /f
+
+# Gaming Priority
 $gamesPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games"
-if (Test-Path $gamesPath) {
-    Set-ItemProperty $gamesPath "Affinity" 0 -Type DWord -EA SilentlyContinue
-    Set-ItemProperty $gamesPath "Background Only" "False" -Type String -EA SilentlyContinue
-    Set-ItemProperty $gamesPath "BackgroundPriority" 1 -Type DWord -EA SilentlyContinue
-    Set-ItemProperty $gamesPath "Clock Rate" 10000 -Type DWord -EA SilentlyContinue
-    Set-ItemProperty $gamesPath "GPU Priority" 8 -Type DWord -EA SilentlyContinue
-    Set-ItemProperty $gamesPath "Priority" 6 -Type DWord -EA SilentlyContinue
-    Set-ItemProperty $gamesPath "Scheduling Category" "High" -Type String -EA SilentlyContinue
-    Set-ItemProperty $gamesPath "SFIO Priority" "High" -Type String -EA SilentlyContinue
+Set-ItemProperty $gamesPath "Affinity" 0 -Type DWord
+Set-ItemProperty $gamesPath "Background Only" "False"
+Set-ItemProperty $gamesPath "GPU Priority" 8 -Type DWord
+Set-ItemProperty $gamesPath "Priority" 6 -Type DWord
+Set-ItemProperty $gamesPath "Scheduling Category" "High"
+Set-ItemProperty $gamesPath "SFIO Priority" "High"
+
+# Network + System Responsiveness
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 0xffffffff /f
+
+# FiveM / GTA5 Priority
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\GTA5.exe\PerfOptions" /v CpuPriorityClass /t REG_DWORD /d 3 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\FiveM_GTAProcess.exe\PerfOptions" /v CpuPriorityClass /t REG_DWORD /d 3 /f
+
+# 4. Memory + Svchost (32GB)
+Write-Host "[4/6] Memory Optimization..." -ForegroundColor Cyan
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v DisablePagingExecutive /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v LargeSystemCache /t REG_DWORD /d 1 /f
+
+$totalRam = (Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1GB
+if ($totalRam -ge 16) {
+    $thresh = [math]::Round($totalRam * 1024 * 1024 * 1.1)
+    reg add "HKLM\SYSTEM\ControlSet001\Control" /v SvcHostSplitThresholdInKB /t REG_DWORD /d $thresh /f
 }
 
-Set-ItemProperty "HKCU:\System\GameConfigStore" "GameDVR_FSEBehaviorMode" 2 -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKCU:\System\GameConfigStore" "GameDVR_HonorUserFSEBehaviorMode" 1 -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKCU:\System\GameConfigStore" "GameDVR_DXGIHonorFSEWindowsCompatible" 1 -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKCU:\System\GameConfigStore" "GameDVR_EFSEFeatureFlags" 0 -Type DWord -EA SilentlyContinue
-
-New-Item "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Force | Out-Null
-Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "NetworkThrottlingIndex" 0xffffffff -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "SystemResponsiveness" 0 -Type DWord -EA SilentlyContinue
-New-Item "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Force | Out-Null
-Set-ItemProperty "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "NetworkThrottlingIndex" 0xffffffff -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "SystemResponsiveness" 0 -Type DWord -EA SilentlyContinue
-$tcpPath = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters"
-Set-ItemProperty $tcpPath "TcpAckFrequency" 1 -EA SilentlyContinue
-Set-ItemProperty $tcpPath "TCPNoDelay" 1 -EA SilentlyContinue
-Set-ItemProperty $tcpPath "NetworkThrottlingIndex" 0xffffffff -Type DWord -EA SilentlyContinue
-
-Get-ChildItem "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -EA SilentlyContinue | % {
-    Set-ItemProperty $_.PSPath "TcpAckFrequency" 1 -EA SilentlyContinue
-    Set-ItemProperty $_.PSPath "TCPNoDelay" 1 -EA SilentlyContinue
-}
-
-Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" "Win32PrioritySeparation" 26 -Type DWord -EA SilentlyContinue
-New-Item "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\GTA5.exe\PerfOptions" -Force | Out-Null
-Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\GTA5.exe\PerfOptions" "CpuPriorityClass" 3 -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\GTA5.exe\PerfOptions" "IoPriority" 3 -Type DWord -EA SilentlyContinue
-New-Item "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\FiveM_GTAProcess.exe\PerfOptions" -Force | Out-Null
-Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\FiveM_GTAProcess.exe\PerfOptions" "CpuPriorityClass" 3 -Type DWord -EA SilentlyContinue
-Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\FiveM_GTAProcess.exe\PerfOptions" "IoPriority" 3 -Type DWord -EA SilentlyContinue
-powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
-powercfg /change monitor-timeout-ac 0 2>$null
-powercfg /change standby-timeout-ac 0 2>$null
-powercfg /hibernate off 2>$null
-
-# 5. Memory + Svchost Reduction
-Write-Host "[Memory] Tweaks..." -ForegroundColor Cyan
-$memPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"
-Set-ItemProperty $memPath "DisablePagingExecutive" 1 -Type DWord -EA SilentlyContinue
-Set-ItemProperty $memPath "LargeSystemCache" 1 -Type DWord -EA SilentlyContinue
-Set-Service "storsvc" -StartupType Disabled -EA SilentlyContinue
-
-$totalRamGB = [math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1GB, 0)
-if ($totalRamGB -ge 8) {
-    $thresh = [math]::Round($totalRamGB * 1024 * 1024 * 1.1)
-    Set-ItemProperty "HKLM:\SYSTEM\ControlSet001\Control" "SvcHostSplitThresholdInKB" $thresh -Type DWord -EA SilentlyContinue
-}
-
-# 6. Mouse + Services
-Write-Host "[Input/Services] Disable..." -ForegroundColor Cyan
-@("MouseSpeed","MouseThreshold1","MouseThreshold2") | % { Set-ItemProperty "HKCU:\Control Panel\Mouse" $_ 0 -EA SilentlyContinue }
-Set-ItemProperty "HKCU:\Control Panel\Desktop" "MenuShowDelay" 0 -Type String -EA SilentlyContinue
-Set-ItemProperty "HKCU:\Control Panel\Desktop" "ForegroundLockTimeout" 0 -Type DWord -EA SilentlyContinue
-
-$services = @("SysMain","WSearch","TabletInputService","DiagTrack","DmWappushservice","PrintSpooler","RemoteRegistry","TrkWks","WbioSrvc","FrameServer")
-foreach ($svc in $services) {
-    if (Get-Service $svc -EA SilentlyContinue) {
-        Stop-Service $svc -Force -EA SilentlyContinue
-        Set-Service $svc -StartupType Disabled -EA SilentlyContinue
+# 5. Services Disable
+Write-Host "[5/6] Disabling unnecessary Services..." -ForegroundColor Cyan
+$services = @("DiagTrack","dmwappushservice","SysMain","WSearch","XblAuthManager","XblGameSave","XboxNetApiSvc","upnphost","SSDPSRV","DoSvc","BITS","UsoSvc")
+foreach ($s in $services) {
+    if (Get-Service -Name $s -EA SilentlyContinue) {
+        Stop-Service -Name $s -Force -EA SilentlyContinue
+        Set-Service -Name $s -StartupType Disabled -EA SilentlyContinue
     }
 }
 
-Write-Host "เพิ่ม Aggressive Gaming Tweaks..." -ForegroundColor Cyan
+# 6. Power Plan + Final
+Write-Host "[6/6] Setting Ultimate Performance..." -ForegroundColor Green
+powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
+powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
+powercfg /hibernate off
 
-# Power Throttling + Gaming Priority
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v PowerThrottlingOff /t REG_DWORD /d 1 /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 10 /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 0xffffffff /f
-
-# Disable MPO (ช่วย ลด stutter)
-reg add "HKLM\SOFTWARE\Microsoft\Windows\Dwm" /v OverlayTestMode /t REG_DWORD /d 5 /f
-
-# ลบ Copilot
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" /v TurnOffWindowsCopilot /t REG_DWORD /d 1 /f
-
-# 7. Cleanup
-Write-Host "[Cleanup] Running DISM..." -ForegroundColor Yellow
-Dism /online /Cleanup-Image /StartComponentCleanup /ResetBase 2>$null
-
-Write-Host "`n--- Done! Restart your PC now ---" -ForegroundColor Green
-Write-Host "DISM /ResetBase may error or be ignored in latest Win11 (normally doesn't affect other tweaks)" -ForegroundColor Yellow
-Write-Host "After restart, check Task Manager: svchost should be lower, game latency improved" -ForegroundColor Cyan
-Write-Host "Project: https://github.com/Nozeed/Optimize11-By-NOZEED" -ForegroundColor Cyan
+Write-Host "✅ เสร็จสิ้น! Restart เครื่องเลยครับ" -ForegroundColor Green
