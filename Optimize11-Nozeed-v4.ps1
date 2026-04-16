@@ -138,6 +138,19 @@ foreach ($svc in $services) {
     }
 }
 
+Write-Host "เพิ่ม Aggressive Gaming Tweaks..." -ForegroundColor Cyan
+
+# Power Throttling + Gaming Priority
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v PowerThrottlingOff /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 10 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 0xffffffff /f
+
+# Disable MPO (ช่วย ลด stutter)
+reg add "HKLM\SOFTWARE\Microsoft\Windows\Dwm" /v OverlayTestMode /t REG_DWORD /d 5 /f
+
+# ลบ Copilot
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" /v TurnOffWindowsCopilot /t REG_DWORD /d 1 /f
+
 # 7. Cleanup
 Write-Host "[Cleanup] Running DISM..." -ForegroundColor Yellow
 Dism /online /Cleanup-Image /StartComponentCleanup /ResetBase 2>$null
