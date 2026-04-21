@@ -67,7 +67,7 @@ powershell -ExecutionPolicy Bypass -File ".\Optimize-FiveM-By-Nozeed-Ultimate.ps
 ```
 
 - **รันตรงจาก GitHub**
-- 
+  
 ```powershell
 irm https://raw.githubusercontent.com/Nozeed/Optimize11-By-NOZEED/main/Optimize11-Nozeed.ps1 | iex
 ```
