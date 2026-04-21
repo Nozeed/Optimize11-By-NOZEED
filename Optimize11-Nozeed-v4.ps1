@@ -1,108 +1,326 @@
-#================================================================================
-#   Windows-11-Gaming-Optimization-Script-By-NOZEED
-#   Project: https://github.com/Nozeed/Optimize11-By-NOZEED
-#   Author: NOZEED (@beernozeed) + Grok Optimized
-#   Description: Ultimate Gaming Optimize Win11 26H2 (FiveM Focused)
-#   Warning: Run as Administrator | Restart after run
-#================================================================================
+[CmdletBinding()]
+param(
+    [switch]$SkipBloatwareRemoval,
+    [switch]$SkipServiceTweaks,
+    [switch]$SkipRestorePoint
+)
 
-$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-if (-not $isAdmin) { 
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit 
+$ErrorActionPreference = 'SilentlyContinue'
+
+function Write-Section {
+    param([string]$Message)
+    Write-Host "`n==== $Message ====" -ForegroundColor Cyan
 }
 
-Write-Host "🚀 NOZEED Gaming Optimize - Ultimate" -ForegroundColor Green
-Write-Host "กำลังปรับแต่งให้แรงที่สุดสำหรับ..." -ForegroundColor Cyan
-
-# 1. Bloatware + OneDrive + Copilot Removal
-Write-Host "[1/6] Removing Bloat + OneDrive + Copilot..." -ForegroundColor Cyan
-taskkill /f /im OneDrive.exe *>$null 2>&1
-@("$env:SystemRoot\SysWOW64\OneDriveSetup.exe", "$env:SystemRoot\System32\OneDriveSetup.exe") | % { 
-    if (Test-Path $_) { Start-Process $_ "/uninstall" -Wait -NoNewWindow -EA SilentlyContinue } 
+function Write-Good {
+    param([string]$Message)
+    Write-Host "[OK] $Message" -ForegroundColor Green
 }
 
-$bloatList = @("*OneDrive*","*Xbox*","*Bing*","*Family*","*Camera*","*People*","*Zune*","*WebExperience*","*GetHelp*","*YourPhone*","*OfficeHub*","*Teams*","*FeedbackHub*","*Clipchamp*","*Copilot*")
-foreach ($app in $bloatList) {
-    Get-AppxPackage -AllUsers $app | Remove-AppxPackage -EA SilentlyContinue
-    Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like $app } | Remove-AppxProvisionedPackage -Online -EA SilentlyContinue
+function Write-WarnText {
+    param([string]$Message)
+    Write-Host "[WARN] $Message" -ForegroundColor Yellow
 }
 
-# ลบ Copilot ถาวร
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" /v TurnOffWindowsCopilot /t REG_DWORD /d 1 /f
-reg add "HKCU\Software\Policies\Microsoft\Windows\WindowsCopilot" /v TurnOffWindowsCopilot /t REG_DWORD /d 1 /f
-
-# ลบ OneDrive เต็ม
-@("$env:UserProfile\OneDrive", "$env:LocalAppData\Microsoft\OneDrive", "$env:ProgramData\Microsoft OneDrive", "C:\OneDriveTemp") | Remove-Item -Recurse -Force -EA SilentlyContinue
-New-Item "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Force | Out-Null
-Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" "DisableFileSyncNGSC" 1 -Type DWord
-
-# 2. Visual + Classic
-Write-Host "[2/6] Disable Visual Effects + Classic UI..." -ForegroundColor Cyan
-Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" "VisualFXSetting" 3 -Type DWord
-@("TaskbarAnimations","ListviewAlphaSelect") | % { Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" $_ 0 -Type DWord }
-Set-ItemProperty "HKCU:\Software\Microsoft\Windows\DWM" "EnableAeroPeek" 0 -Type DWord
-Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" "EnableTransparency" 0 -Type DWord
-Stop-Process -Name explorer -Force; Start-Sleep 2; Start-Process explorer
-
-# Classic Right-Click + Photo Viewer
-New-Item "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Force | Out-Null
-Set-ItemProperty "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" "(Default)" "" 
-
-# 3. Gaming + Latency + Power Throttling
-Write-Host "[3/6] Gaming & Low Latency Tweaks..." -ForegroundColor Cyan
-
-# Power Throttling Off
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" /v PowerThrottlingOff /t REG_DWORD /d 1 /f
-
-# GameDVR + GameBar
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f
-reg add "HKCU:\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f
-reg add "HKCU:\System\GameConfigStore" /v GameDVR_FSEBehaviorMode /t REG_DWORD /d 2 /f
-
-reg add "HKLM\SOFTWARE\Microsoft\Windows\Dwm" /v OverlayTestMode /t REG_DWORD /d 5 /f
-
-# Gaming Priority
-$gamesPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games"
-Set-ItemProperty $gamesPath "Affinity" 0 -Type DWord
-Set-ItemProperty $gamesPath "Background Only" "False"
-Set-ItemProperty $gamesPath "GPU Priority" 8 -Type DWord
-Set-ItemProperty $gamesPath "Priority" 6 -Type DWord
-Set-ItemProperty $gamesPath "Scheduling Category" "High"
-Set-ItemProperty $gamesPath "SFIO Priority" "High"
-
-# Network + System Responsiveness
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 0xffffffff /f
-
-# FiveM / GTA5 Priority
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\GTA5.exe\PerfOptions" /v CpuPriorityClass /t REG_DWORD /d 3 /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\FiveM_GTAProcess.exe\PerfOptions" /v CpuPriorityClass /t REG_DWORD /d 3 /f
-
-# 4. Memory + Svchost (32GB)
-Write-Host "[4/6] Memory Optimization..." -ForegroundColor Cyan
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v DisablePagingExecutive /t REG_DWORD /d 1 /f
-reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v LargeSystemCache /t REG_DWORD /d 1 /f
-
-$totalRam = (Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1GB
-if ($totalRam -ge 16) {
-    $thresh = [math]::Round($totalRam * 1024 * 1024 * 1.1)
-    reg add "HKLM\SYSTEM\ControlSet001\Control" /v SvcHostSplitThresholdInKB /t REG_DWORD /d $thresh /f
-}
-
-# 5. Services Disable
-Write-Host "[5/6] Disabling unnecessary Services..." -ForegroundColor Cyan
-$services = @("DiagTrack","dmwappushservice","SysMain","WSearch","XblAuthManager","XblGameSave","XboxNetApiSvc","upnphost","SSDPSRV","DoSvc","BITS","UsoSvc")
-foreach ($s in $services) {
-    if (Get-Service -Name $s -EA SilentlyContinue) {
-        Stop-Service -Name $s -Force -EA SilentlyContinue
-        Set-Service -Name $s -StartupType Disabled -EA SilentlyContinue
+function Test-Admin {
+    $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    if (-not $isAdmin) {
+        Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+        exit
     }
 }
 
-# 6. Power Plan + Final
-Write-Host "[6/6] Setting Ultimate Performance..." -ForegroundColor Green
-powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
-powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
-powercfg /hibernate off
+function Set-RegValue {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)]$Value,
+        [ValidateSet('String','ExpandString','Binary','DWord','MultiString','QWord')][string]$Type = 'DWord'
+    )
+    if (-not (Test-Path $Path)) {
+        New-Item -Path $Path -Force | Out-Null
+    }
+    New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $Type -Force | Out-Null
+}
 
-Write-Host "✅ เสร็จสิ้น! Restart เครื่องเลยครับ" -ForegroundColor Green
+function Export-RegistryBackup {
+    param([string]$BackupRoot)
+
+    $targets = @(
+        @{ Hive = 'HKLM'; Key = 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile'; File = '01-systemprofile.reg' },
+        @{ Hive = 'HKLM'; Key = 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games'; File = '02-games-task.reg' },
+        @{ Hive = 'HKLM'; Key = 'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management'; File = '03-memory.reg' },
+        @{ Hive = 'HKLM'; Key = 'SYSTEM\CurrentControlSet\Control\Power'; File = '04-power.reg' },
+        @{ Hive = 'HKLM'; Key = 'SOFTWARE\Policies\Microsoft\Windows'; File = '05-policies.reg' },
+        @{ Hive = 'HKCU'; Key = 'Software\Microsoft\Windows\CurrentVersion\Explorer'; File = '06-explorer.reg' },
+        @{ Hive = 'HKCU'; Key = 'System\GameConfigStore'; File = '07-gameconfig.reg' },
+        @{ Hive = 'HKLM'; Key = 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options'; File = '08-ifeo.reg' }
+    )
+
+    foreach ($target in $targets) {
+        $fullKey = "$($target.Hive)\$($target.Key)"
+        $output = Join-Path $BackupRoot $target.File
+        & reg export $fullKey $output /y | Out-Null
+    }
+}
+
+function New-SystemRestorePoint {
+    if ($SkipRestorePoint) {
+        Write-WarnText 'Skipped restore point creation.'
+        return
+    }
+
+    Enable-ComputerRestore -Drive "$($env:SystemDrive)\" | Out-Null
+    Checkpoint-Computer -Description 'Boost FiveM By Nozeed' -RestorePointType 'MODIFY_SETTINGS' | Out-Null
+    Write-Good 'Restore point created.'
+}
+
+function Remove-Bloatware {
+    if ($SkipBloatwareRemoval) {
+        Write-WarnText 'Skipped bloatware removal.'
+        return
+    }
+
+    $appPatterns = @(
+        '*MicrosoftTeams*',
+        '*Teams*',
+        '*Xbox*',
+        '*XboxGamingOverlay*',
+        '*XboxSpeechToTextOverlay*',
+        '*Bing*',
+        '*Clipchamp*',
+        '*GetHelp*',
+        '*Getstarted*',
+        '*MicrosoftSolitaireCollection*',
+        '*OfficeHub*',
+        '*People*',
+        '*SkypeApp*',
+        '*Todos*',
+        '*YourPhone*',
+        '*ZuneMusic*',
+        '*ZuneVideo*',
+        '*WindowsAlarms*',
+        '*WindowsCamera*',
+        '*WindowsFeedbackHub*',
+        '*WindowsMaps*',
+        '*MixedReality*',
+        '*OneDrive*',
+        '*Copilot*',
+        '*549981C3F5F10*'
+    )
+
+    taskkill /f /im OneDrive.exe *> $null 2>&1
+    foreach ($setup in @("$env:SystemRoot\SysWOW64\OneDriveSetup.exe", "$env:SystemRoot\System32\OneDriveSetup.exe")) {
+        if (Test-Path $setup) {
+            Start-Process -FilePath $setup -ArgumentList '/uninstall' -Wait -WindowStyle Hidden
+        }
+    }
+
+    foreach ($pattern in $appPatterns) {
+        Get-AppxPackage -AllUsers -Name $pattern | Remove-AppxPackage -AllUsers
+        Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -like $pattern } | Remove-AppxProvisionedPackage -Online
+    }
+
+    foreach ($path in @(
+        "$env:UserProfile\OneDrive",
+        "$env:LocalAppData\Microsoft\OneDrive",
+        "$env:ProgramData\Microsoft OneDrive",
+        'C:\OneDriveTemp'
+    )) {
+        Remove-Item -Path $path -Recurse -Force
+    }
+
+    Set-RegValue -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive' -Name 'DisableFileSyncNGSC' -Value 1
+    Set-RegValue -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot' -Name 'TurnOffWindowsCopilot' -Value 1
+    Set-RegValue -Path 'HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot' -Name 'TurnOffWindowsCopilot' -Value 1
+    Write-Good 'Bloatware, OneDrive, and Copilot tweaks applied.'
+}
+
+function Set-VisualTweaks {
+    Set-RegValue -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects' -Name 'VisualFXSetting' -Value 2
+    Set-RegValue -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'TaskbarAnimations' -Value 0
+    Set-RegValue -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'ListviewAlphaSelect' -Value 0
+    Set-RegValue -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'IconsOnly' -Value 1
+    Set-RegValue -Path 'HKCU:\Software\Microsoft\Windows\DWM' -Name 'EnableAeroPeek' -Value 0
+    Set-RegValue -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
+    Set-RegValue -Path 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32' -Name '(default)' -Value '' -Type String
+    Stop-Process -Name explorer -Force
+    Start-Sleep -Seconds 2
+    Start-Process explorer.exe
+    Write-Good 'Visual and classic UI tweaks applied.'
+}
+
+function Set-GamingTweaks {
+    Set-RegValue -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling' -Name 'PowerThrottlingOff' -Value 1
+    Set-RegValue -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR' -Name 'AllowGameDVR' -Value 0
+    Set-RegValue -Path 'HKCU:\System\GameConfigStore' -Name 'GameDVR_Enabled' -Value 0
+    Set-RegValue -Path 'HKCU:\System\GameConfigStore' -Name 'GameDVR_FSEBehaviorMode' -Value 2
+    Set-RegValue -Path 'HKCU:\System\GameConfigStore' -Name 'GameDVR_HonorUserFSEBehaviorMode' -Value 1
+    Set-RegValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Dwm' -Name 'OverlayTestMode' -Value 5
+
+    $systemProfile = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile'
+    $gamesProfile = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games'
+    Set-RegValue -Path $systemProfile -Name 'SystemResponsiveness' -Value 0
+    Set-RegValue -Path $systemProfile -Name 'NetworkThrottlingIndex' -Value 4294967295
+    Set-RegValue -Path $gamesProfile -Name 'Affinity' -Value 0
+    Set-RegValue -Path $gamesProfile -Name 'Background Only' -Value 'False' -Type String
+    Set-RegValue -Path $gamesProfile -Name 'Clock Rate' -Value 10000
+    Set-RegValue -Path $gamesProfile -Name 'GPU Priority' -Value 8
+    Set-RegValue -Path $gamesProfile -Name 'Priority' -Value 6
+    Set-RegValue -Path $gamesProfile -Name 'Scheduling Category' -Value 'High' -Type String
+    Set-RegValue -Path $gamesProfile -Name 'SFIO Priority' -Value 'High' -Type String
+
+    netsh int tcp set global autotuninglevel=normal | Out-Null
+    netsh int tcp set global rss=enabled | Out-Null
+    netsh int tcp set global chimney=enabled | Out-Null
+    netsh int tcp set global dca=enabled | Out-Null
+    netsh int tcp set global netdma=enabled | Out-Null
+    ipconfig /flushdns | Out-Null
+
+    foreach ($exe in @('FiveM.exe','FiveM_GTAProcess.exe','GTA5.exe')) {
+        $perfPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\$exe\PerfOptions"
+        Set-RegValue -Path $perfPath -Name 'CpuPriorityClass' -Value 3
+        Set-RegValue -Path $perfPath -Name 'IoPriority' -Value 3
+        Set-RegValue -Path $perfPath -Name 'PagePriority' -Value 5
+    }
+
+    Get-Process -Name 'FiveM','FiveM_GTAProcess','GTA5' | ForEach-Object {
+        try {
+            $_.PriorityClass = 'High'
+            Write-Good "Raised live process priority: $($_.ProcessName)"
+        }
+        catch {
+        }
+    }
+
+    Write-Good 'Gaming and low-latency tweaks applied.'
+}
+
+function Set-MemoryTweaks {
+    $memoryPath = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management'
+    Set-RegValue -Path $memoryPath -Name 'DisablePagingExecutive' -Value 1
+    Set-RegValue -Path $memoryPath -Name 'LargeSystemCache' -Value 0
+    Set-RegValue -Path $memoryPath -Name 'SecondLevelDataCache' -Value 1024
+
+    $totalRam = [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB)
+    if ($totalRam -ge 32) {
+        Set-RegValue -Path 'HKLM:\SYSTEM\CurrentControlSet\Control' -Name 'SvcHostSplitThresholdInKB' -Value 33554432
+    }
+    elseif ($totalRam -ge 16) {
+        Set-RegValue -Path 'HKLM:\SYSTEM\CurrentControlSet\Control' -Name 'SvcHostSplitThresholdInKB' -Value 16777216
+    }
+
+    Write-Good "Memory tweaks applied for $totalRam GB RAM."
+}
+
+function Disable-UnneededServices {
+    if ($SkipServiceTweaks) {
+        Write-WarnText 'Skipped service tweaks.'
+        return
+    }
+
+    $disableServices = @(
+        'DiagTrack',
+        'dmwappushservice',
+        'MapsBroker',
+        'PhoneSvc',
+        'RemoteRegistry',
+        'RetailDemo',
+        'WSearch',
+        'XblAuthManager',
+        'XblGameSave',
+        'XboxGipSvc',
+        'XboxNetApiSvc',
+        'Fax',
+        'AJRouter',
+        'WMPNetworkSvc',
+        'lfsvc',
+        'SharedAccess',
+        'TrkWks',
+        'WerSvc'
+    )
+
+    $manualServices = @(
+        'SysMain',
+        'DoSvc',
+        'BITS',
+        'UsoSvc',
+        'Spooler',
+        'PcaSvc',
+        'DiagSvc'
+    )
+
+    foreach ($name in $disableServices) {
+        $svc = Get-Service -Name $name
+        if ($svc) {
+            if ($svc.Status -ne 'Stopped') {
+                Stop-Service -Name $name -Force
+            }
+            Set-Service -Name $name -StartupType Disabled
+            Write-Good "Disabled service: $name"
+        }
+    }
+
+    foreach ($name in $manualServices) {
+        $svc = Get-Service -Name $name
+        if ($svc) {
+            if ($svc.Status -ne 'Stopped' -and $name -in @('SysMain','DoSvc')) {
+                Stop-Service -Name $name -Force
+            }
+            Set-Service -Name $name -StartupType Manual
+            Write-Good "Set service to Manual: $name"
+        }
+    }
+}
+
+function Set-PowerPlan {
+    powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 | Out-Null
+    $schemes = powercfg /list
+    $ultimateGuid = (($schemes | Select-String 'Ultimate Performance').ToString() -split '\s+')[3]
+    if (-not $ultimateGuid) {
+        $ultimateGuid = 'e9a42b02-d5df-448d-aa00-03f14749eb61'
+    }
+    powercfg /setactive $ultimateGuid | Out-Null
+    powercfg /hibernate off | Out-Null
+    powercfg /change monitor-timeout-ac 0 | Out-Null
+    powercfg /change disk-timeout-ac 0 | Out-Null
+    powercfg /change standby-timeout-ac 0 | Out-Null
+    Write-Good 'Ultimate Performance power plan enabled.'
+}
+
+Test-Admin
+
+$root = Split-Path -Parent $PSCommandPath
+$stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+$backupRoot = Join-Path $root "backup-$stamp"
+New-Item -ItemType Directory -Path $backupRoot -Force | Out-Null
+Start-Transcript -Path (Join-Path $backupRoot 'optimization-log.txt') -Force | Out-Null
+
+Write-Host 'Boost FiveM By Nozeed - Ultimate Windows Optimizer' -ForegroundColor Magenta
+Write-Host 'Target: FiveM, GTA V, gaming latency, browsing, Windsurf web dev, voice chat, and creator workflow' -ForegroundColor Gray
+
+Write-Section 'Backup and safety'
+Export-RegistryBackup -BackupRoot $backupRoot
+New-SystemRestorePoint
+
+Write-Section 'Bloatware, OneDrive, Copilot'
+Remove-Bloatware
+
+Write-Section 'Visual performance'
+Set-VisualTweaks
+
+Write-Section 'Gaming latency and process priority'
+Set-GamingTweaks
+
+Write-Section 'Memory optimization'
+Set-MemoryTweaks
+
+Write-Section 'Service optimization'
+Disable-UnneededServices
+
+Write-Section 'Power plan'
+Set-PowerPlan
+
+Stop-Transcript | Out-Null
+Write-Host "`nDone. Backup and logs saved to: $backupRoot" -ForegroundColor Green
+Write-Host 'Recommended: restart Windows before benchmarking FiveM/GTA V.' -ForegroundColor Green
