@@ -43,7 +43,7 @@
 3. รันคำสั่ง:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".\Optimize-FiveM-By-Nozeed-Ultimate.ps1"
+powershell -ExecutionPolicy Bypass -File ".\Optimize11-Nozeed.ps1"
 ```
 
 ## ตัวเลือกเสริม
@@ -51,19 +51,19 @@ powershell -ExecutionPolicy Bypass -File ".\Optimize-FiveM-By-Nozeed-Ultimate.ps
 - **ข้ามการลบ Bloatware**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".\Optimize-FiveM-By-Nozeed-Ultimate.ps1" -SkipBloatwareRemoval
+powershell -ExecutionPolicy Bypass -File ".\Optimize11-Nozeed.ps1" -SkipBloatwareRemoval
 ```
 
 - **ข้ามการปิด service**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".\Optimize-FiveM-By-Nozeed-Ultimate.ps1" -SkipServiceTweaks
+powershell -ExecutionPolicy Bypass -File ".\Optimize11-Nozeed.ps1" -SkipServiceTweaks
 ```
 
 - **ข้ามการสร้าง restore point**
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".\Optimize-FiveM-By-Nozeed-Ultimate.ps1" -SkipRestorePoint
+powershell -ExecutionPolicy Bypass -File ".\Optimize11-Nozeed.ps1" -SkipRestorePoint
 ```
 
 - **รันตรงจาก GitHub**
